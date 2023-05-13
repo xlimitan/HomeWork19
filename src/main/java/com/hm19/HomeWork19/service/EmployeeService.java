@@ -15,23 +15,23 @@ public class EmployeeService {
     private static final int SIZE_LIMIT = 5;
     private final Map<String, Employee> employees = new HashMap(SIZE_LIMIT);
 
-//    public Collection<Employee> getAll(){
-//        return Collections.unmodifiableCollection(employees);
-//    }
+    public Collection<Employee> getAll(){
+        return employees.values();
+    }
 
     public Employee add(Employee employee) {
         if (employees.size()>= SIZE_LIMIT) {
             throw new EmployeeStoragesFullException();
         }
-        if (employees.containsKey(employee.getFullName())) {
+        if (employees.containsKey(createKey(employee))){
             throw new EmployeeAlreadyAddedException();
         }
-        employees.put(employee.getFullName(), employee);
+        employees.put(createKey(employee), employee);
         return employee;
     }
 
     public Employee find(String firstName, String lastName) {
-        Employee employee = employees.get(firstName + " " + lastName);
+        Employee employee = employees.get(createKey(firstName, lastName));
         if (employee==null) {
             throw new EmployeeNotFoundException();
         }
@@ -39,6 +39,13 @@ public class EmployeeService {
 
     }
     public Employee remove (String firstName, String lastName) {
-        return employees.remove(firstName + " " + lastName);
+        return employees.remove(createKey(firstName, lastName));
+    }
+
+    private static String createKey(Employee employee){
+        return createKey(employee.getFirstName(), employee.getLastName());
+    }
+    private static String createKey(String firstName, String lastName){
+        return (firstName + lastName).toLowerCase();
     }
 }
